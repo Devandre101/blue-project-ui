@@ -4,7 +4,9 @@ import React, { useEffect, useState } from "react";
 import PeopleDataTable from "./data-table"; // Adjust if necessary
 import { columns } from "./columns";
 import DateRangePicker from "@/app/people/DateRangePicker";
-
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { ClipLoader } from "react-spinners"; // Import the spinner component
 
 interface Transaction {
   id: number; // Adjust this type based on your API response
@@ -51,14 +53,20 @@ const People = () => {
     fetchPeople(); // Fetch initial data
   }, []); // Empty dependency array means this effect runs once on mount
 
-  if (loading) return <div>Loading...</div>; // Show loading message
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="pulse-spinner"></div>
+      </div>
+    );
+  }
+
   if (error) return <div>Error: {error}</div>; // Show error message
 
   return (
     <div className="container py-10 mx-auto">
-      {/* <DateRangePicker /> */}
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
       <PeopleDataTable columns={columns(fetchPeopleByType)} data={people} />
-      
     </div>
   );
 };

@@ -35,6 +35,9 @@ import { downloadToExcel } from "@/lib/xlsx";
 import { ArrowUpDown } from "lucide-react";
 import DateRangePicker from "./DateRangePicker";
 
+
+var dateFilterOn : boolean;
+
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -54,16 +57,49 @@ export function PeopleDataTable<TData, TValue>({
 
   const [tableData, setTableData] = useState(data);
 
+  const handleExportSelected = () => {
+    const selectedRows = table
+      .getSelectedRowModel()
+      .rows.map((row) => row.original);
+  
+    // Export selectedRows to CSV or Excel
+    downloadToExcel(selectedRows);
+  };
+
+  const handleExportRows = () => {
+    const rowsToExport =
+      table.getSelectedRowModel().rows.length > 0
+        ? table.getSelectedRowModel().rows.map((row) => row.original) // Export selected rows if any
+        : table.getFilteredRowModel().rows.map((row) => row.original); // Otherwise, export filtered rows
+  
+    // Export rowsToExport to CSV or Excel
+    downloadToExcel(rowsToExport);
+  };
+
   // This function will be called when the date range changes
   const handleDateRangeChange = (data: TData[]) => {
+    dateFilterOn = true;
     setTableData(data); // Update the table data with the fetched data
     onDateRangeChange(data); // Call the prop function to notify the parent
+    
   };
 
   const handleSelect = async (type: string) => {
     setSelectedType(type);
     try {
+
+      // var response = null;
+    
+      // if(dateFilterOn){
+      //   response = await fetch (`https://localhost:7232/api/Transactions/filter?startDate=2025-02-01%2000%3A00%3A00.000&endDate=2025-03-31%2023%3A59%3A59.999&transactionType=withdrawal`);
+       
+      //   console.log("dateFilterOn");
+      // }else{
+      //  response = await fetch(`https://localhost:7232/api/Transactions/type/${type}`);
+      // }
+
       const response = await fetch(`https://localhost:7232/api/Transactions/type/${type}`);
+
       if (!response.ok) throw new Error(`Error: ${response.statusText}`);
       const fetchedData = await response.json();
       setTableData(fetchedData);
@@ -122,15 +158,9 @@ export function PeopleDataTable<TData, TValue>({
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <Button
-          onClick={() => {
-            const filteredData = table.getFilteredRowModel().rows.map(row => row.original);
-            downloadToExcel(filteredData);
-          }}
-          className="ml-4"
-        >
-          Export to Excel
-        </Button>
+        <Button onClick={handleExportRows} className="ml-4">
+  Export to Excel
+</Button>
 
         <ThemeToggle className="ml-4" />
         <DropdownMenu>
