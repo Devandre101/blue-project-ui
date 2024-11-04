@@ -1,22 +1,35 @@
 import xlsx, { IJsonSheet } from "json-as-xlsx";
 import { people } from "@/people";
 
-export function downloadToExcel() {
+export function downloadToExcel(people: any) {
+  // Calculate total number of records
+  const totalRecords = people.length;
+
+  // Calculate the total amount by summing the `amount` field in each record
+  const totalAmount = people.reduce((sum: number, person: any) => sum + (person.amount || 0), 0);
+
+  // Create a summary row to display the total count and total amount
+  const summaryRow = {
+    transactionId: `Total Records: ${totalRecords}`, // Display total count
+    "user.username": "", 
+    amount: `Total Amount: ${totalAmount}`, // Display total amount
+    transactionDate: "",
+    createdAt: "",
+    transactionType: "",
+  };
+
   let columns: IJsonSheet[] = [
     {
       sheet: "Persons",
       columns: [
-        { label: "Person ID", value: "id" },
-        { label: "First Name", value: "first_name" },
-        { label: "Last Name", value: "last_name" },
-        { label: "Email", value: "email" },
-        { label: "Gender", value: "gender" },
-        {
-          label: "Date of Birth",
-          value: (row) => new Date(row.date_of_birth).toLocaleDateString(),
-        },
+        { label: "Transaction ID", value: "transactionId" },
+        { label: "User Name", value: "user.username" },
+        { label: "Amount", value: "amount" },
+        { label: "Transaction Date", value: "transactionDate" },
+        { label: "Created Date", value: "createdAt" },
+        { label: "Transaction Type", value: "transactionType" },
       ],
-      content: people,
+      content: [summaryRow, ...people], // Add summary row before the main data
     },
   ];
 

@@ -1,95 +1,113 @@
-"use client";
+"use client"; // Ensure this is marked as a client component
+
 import { Button } from "@/components/ui/button";
-import { Person } from "@/people";
+import { Person } from "@/people"; // Update this import based on your data type
 import { ColumnDef } from "@tanstack/react-table";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 
-export const columns: ColumnDef<Person>[] = [
+export const columns = (fetchPeopleByType: (type: string) => void): ColumnDef<Person>[] => [
   {
     id: "select",
-    header: ({ table }) => {
-      return (
-        <Checkbox
-          checked={table.getIsAllPageRowsSelected()}
-          onCheckedChange={(value) => {
-            table.toggleAllPageRowsSelected(!!value);
-          }}
-        />
-      );
-    },
-    cell: ({ row }) => {
-      return (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => {
-            row.toggleSelected(!!value);
-          }}
-        />
-      );
-    },
+    header: ({ table }) => (
+      <Checkbox
+        checked={table.getIsAllPageRowsSelected()}
+        onCheckedChange={(value) => {
+          table.toggleAllPageRowsSelected(!!value);
+        }}
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => {
+          row.toggleSelected(!!value);
+        }}
+      />
+    ),
     enableSorting: false,
     enableHiding: false,
   },
   {
+    header: "Transaction ID",
+    accessorKey: "transactionId", // Adjust this based on your data structure
+  },
+  {
+    header: "User Name",
+    accessorKey: "user.username", // Adjust this based on your data structure
+  },
+  {
+    header: "Amount",
+    accessorKey: "amount", // Adjust this based on your data structure
+  },
+  {
+    header: "Transaction Date",
+    accessorKey: "transactionDate", // Adjust based on your data structure
+  },
+  {
+    header: "Created Date",
+    accessorKey: "createdAt", // Adjust based on your data structure
+  },
+  {
     header: ({ column }) => {
+      const handleTransactionTypeClick = (transactionType: string) => {
+        fetchPeopleByType(transactionType); // Call the passed function to fetch data
+      };
+    
       return (
-        <Button
-          variant="ghost"
-          onClick={() => {
-            column.toggleSorting(column.getIsSorted() === "asc");
-          }}
-        >
-          Person ID
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            >
+              Transaction Type
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          
+          <DropdownMenuContent align="start">
+            <DropdownMenuItem onClick={() => handleTransactionTypeClick("deposit")}>
+              Deposit
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleTransactionTypeClick("withdrawal")}>
+              Withdrawal
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleTransactionTypeClick("transfer")}>
+              Transfer
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       );
     },
-    accessorKey: "id",
+    accessorKey: "transactionType", // This should match the key for your data
   },
-  {
-    header: "First Name",
-    accessorKey: "first_name",
-  },
-  {
-    header: "Last Name",
-    accessorKey: "last_name",
-  },
-  {
-    header: "Email",
-    accessorKey: "email",
-  },
-  {
-    header: "Gender",
-    accessorKey: "gender",
-  },
-  {
-    header: "Date of Birth",
-    accessorKey: "date_of_birth",
-    cell: ({ row }) => {
-      const date_of_birth = row.getValue("date_of_birth");
-      const formatted = new Date(date_of_birth as string).toLocaleDateString();
-      return <div className="font-medium">{formatted}</div>;
-    },
-  },
+
+  // {
+  //   header: "Date of Birth",
+  //   accessorKey: "date_of_birth", // Adjust based on your data structure
+  //   cell: ({ row }) => {
+  //     const date_of_birth = row.getValue("date_of_birth");
+  //     const formatted = new Date(date_of_birth as string).toLocaleDateString();
+  //     return <div className="font-medium">{formatted}</div>;
+  //   },
+  // },
   {
     id: "actions",
     cell: ({ row }) => {
       const person = row.original;
-      const personId = person.id;
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="w-8 h-8 p-0">
-              <MoreHorizontal className="h-4 w-4" />
+              <ArrowUpDown className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
