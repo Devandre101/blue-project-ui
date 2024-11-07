@@ -37,7 +37,7 @@ import DateRangePicker from "./DateRangePicker";
 
 
 var dateFilterOn : boolean;
-var fileTitleSufix: string;
+var fileTitleSufix: string = "";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
