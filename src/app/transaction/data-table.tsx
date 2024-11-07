@@ -37,6 +37,7 @@ import DateRangePicker from "./DateRangePicker";
 
 
 var dateFilterOn : boolean;
+var fileTitleSufix: string;
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -57,6 +58,8 @@ export function PeopleDataTable<TData, TValue>({
 
   const [tableData, setTableData] = useState(data);
 
+ 
+
   const handleExportSelected = () => {
     const selectedRows = table
       .getSelectedRowModel()
@@ -74,24 +77,25 @@ export function PeopleDataTable<TData, TValue>({
   
     // Generate a dynamic file name (e.g., using the current date)
     const date = new Date().toISOString().slice(0, 10); // Format as YYYY-MM-DD
-    const fileName = `Transaction_Export_${date}`; // Adjust this format as needed
+    const fileName = `Transaction_Export_${fileTitleSufix}_${date}`; // Adjust this format as needed
   
+    fileTitleSufix ="";
     // Pass the dynamic file name to downloadToExcel
     downloadToExcel(rowsToExport, fileName);
   };
 
   // This function will be called when the date range changes
-  const handleDateRangeChange = (data: TData[]) => {
+  const handleDateRangeChange = (data: TData[], dateRange: string) => {
     dateFilterOn = true;
+    fileTitleSufix = dateRange;
     setTableData(data); // Update the table data with the fetched data
-    onDateRangeChange(data); // Call the prop function to notify the parent
-    
-  };
-
+    console.log("Selected Date Range:", dateRange); // Log or use the combined date range
+};
   const handleSelect = async (type: string) => {
     setSelectedType(type);
     try {
-      const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidGVzdCIsImV4cCI6MTczMDgzOTIxOCwiaXNzIjoiWW91cklzc3VlciIsImF1ZCI6IllvdXJBdWRpZW5jZSJ9.YlwydnuePdxGEQneBLQZUIDmA0lj21OfPSZGlNsOnH4'; // Replace with your actual token
+      fileTitleSufix = type;
+      const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidGVzdCIsImV4cCI6MTczMTAwNDI0MiwiaXNzIjoiWW91cklzc3VlciIsImF1ZCI6IllvdXJBdWRpZW5jZSJ9.1hS7_wBQWZjAn8dbTo0LX3fwSgaNtC0ed5cWepXo1OQ'; // Replace with your actual token
       const response = await fetch(`https://localhost:7232/api/Transactions/type/${type}`, {
         headers: {
           'Authorization': `Bearer ${token}`, // Add the Bearer Token

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import PeopleDataTable from "./data-table"; // Adjust if necessary
 import { columns } from "./columns";
-import DateRangePicker from "@/app/people/DateRangePicker";
+import DateRangePicker from "@/app/transaction/DateRangePicker";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ClipLoader } from "react-spinners"; // Import the spinner component
@@ -27,7 +27,7 @@ const People = () => {
   const fetchPeople = async () => {
     setLoading(true); // Set loading to true before the fetch starts
     try {
-      const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidGVzdCIsImV4cCI6MTczMDk5ODg2NywiaXNzIjoiWW91cklzc3VlciIsImF1ZCI6IllvdXJBdWRpZW5jZSJ9.w-ptN6cgWwQbobWPhKgkPlQYq-nKOu59lFeidjjI1k0'; // Replace with your actual token
+      const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidGVzdCIsImV4cCI6MTczMTAwNDI0MiwiaXNzIjoiWW91cklzc3VlciIsImF1ZCI6IllvdXJBdWRpZW5jZSJ9.1hS7_wBQWZjAn8dbTo0LX3fwSgaNtC0ed5cWepXo1OQ'; // Replace with your actual token
       const response = await fetch("https://localhost:7232/api/Transactions", {
         method: 'GET', // Specify the method if necessary
         headers: {
@@ -51,7 +51,7 @@ const People = () => {
 
   const fetchPeopleByType = async (type: string) => {
     try {
-      const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidGVzdCIsImV4cCI6MTczMDgzOTIxOCwiaXNzIjoiWW91cklzc3VlciIsImF1ZCI6IllvdXJBdWRpZW5jZSJ9.YlwydnuePdxGEQneBLQZUIDmA0lj21OfPSZGlNsOnH4'; // Replace with your actual token
+      const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidGVzdCIsImV4cCI6MTczMTAwNDI0MiwiaXNzIjoiWW91cklzc3VlciIsImF1ZCI6IllvdXJBdWRpZW5jZSJ9.1hS7_wBQWZjAn8dbTo0LX3fwSgaNtC0ed5cWepXo1OQ'; // Replace with your actual token
       const response = await fetch(`https://localhost:7232/api/Transactions/type/${type}`, {
         headers: {
           'Authorization': `Bearer ${token}`, // Add the Bearer Token
