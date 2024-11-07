@@ -1,37 +1,28 @@
 import xlsx, { IJsonSheet } from "json-as-xlsx";
 import { people } from "@/people";
 
-export function downloadToExcel(people: any) {
-  // Calculate total number of records
+export function downloadToExcel(people: any, fileName: string) {
   const totalRecords = people.length;
-
-  // Calculate the total amount by summing the `amount` field in each record
   const totalAmount = people.reduce((sum: number, person: any) => sum + (person.amount || 0), 0);
-
-  // Count occurrences of each transaction type (e.g., deposit, withdrawal)
   const transactionTypeCounts = people.reduce((counts: { [key: string]: number }, person: any) => {
     const type = person.transactionType || "Unknown";
     counts[type] = (counts[type] || 0) + 1;
     return counts;
   }, {});
-
-  // Format the transaction type counts as a readable string
   const transactionTypeSummary = Object.entries(transactionTypeCounts)
     .map(([type, count]) => `Total ${type}(s): ${count}`)
     .join(", ");
 
-  // Create a summary row to display the total count, total amount, and transaction type counts
   const summaryRow = {
-    transactionId: `Total Records: ${totalRecords}`, // Display total count
+    transactionId: `Total Records: ${totalRecords}`,
     "user.username": "===",
-    amount: `Total Amount: ${totalAmount}`, // Display total amount
+    amount: `Total Amount: ${totalAmount}`,
     transactionDate: "===",
     createdAt: "===",
-    transactionType: transactionTypeSummary, // Display transaction type counts
+    transactionType: transactionTypeSummary,
   };
 
-  // Set up columns and data
-  let columns: IJsonSheet[] = [
+  const columns: IJsonSheet[] = [
     {
       sheet: "Persons",
       columns: [
@@ -42,13 +33,14 @@ export function downloadToExcel(people: any) {
         { label: "Created Date", value: "createdAt" },
         { label: "Transaction Type", value: "transactionType" },
       ],
-      content: [...people, summaryRow], // Add summary row after the main data
+      content: [...people, summaryRow],
     },
   ];
 
-  let settings = {
-    fileName: "People Excel",
+  const settings = {
+    fileName: fileName || "People Excel", // Use the provided file name, or default if none is provided
   };
 
   xlsx(columns, settings);
 }
+

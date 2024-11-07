@@ -72,8 +72,12 @@ export function PeopleDataTable<TData, TValue>({
         ? table.getSelectedRowModel().rows.map((row) => row.original) // Export selected rows if any
         : table.getFilteredRowModel().rows.map((row) => row.original); // Otherwise, export filtered rows
   
-    // Export rowsToExport to CSV or Excel
-    downloadToExcel(rowsToExport);
+    // Generate a dynamic file name (e.g., using the current date)
+    const date = new Date().toISOString().slice(0, 10); // Format as YYYY-MM-DD
+    const fileName = `Transaction_Export_${date}`; // Adjust this format as needed
+  
+    // Pass the dynamic file name to downloadToExcel
+    downloadToExcel(rowsToExport, fileName);
   };
 
   // This function will be called when the date range changes
@@ -87,18 +91,15 @@ export function PeopleDataTable<TData, TValue>({
   const handleSelect = async (type: string) => {
     setSelectedType(type);
     try {
+      const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidGVzdCIsImV4cCI6MTczMDgzOTIxOCwiaXNzIjoiWW91cklzc3VlciIsImF1ZCI6IllvdXJBdWRpZW5jZSJ9.YlwydnuePdxGEQneBLQZUIDmA0lj21OfPSZGlNsOnH4'; // Replace with your actual token
+      const response = await fetch(`https://localhost:7232/api/Transactions/type/${type}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`, // Add the Bearer Token
+          'Content-Type': 'application/json', // Optional: set content type if needed
+        },
+      });
 
-      // var response = null;
-    
-      // if(dateFilterOn){
-      //   response = await fetch (`https://localhost:7232/api/Transactions/filter?startDate=2025-02-01%2000%3A00%3A00.000&endDate=2025-03-31%2023%3A59%3A59.999&transactionType=withdrawal`);
-       
-      //   console.log("dateFilterOn");
-      // }else{
-      //  response = await fetch(`https://localhost:7232/api/Transactions/type/${type}`);
-      // }
-
-      const response = await fetch(`https://localhost:7232/api/Transactions/type/${type}`);
+      // const response = await fetch(`https://localhost:7232/api/Transactions/type/${type}`);
 
       if (!response.ok) throw new Error(`Error: ${response.statusText}`);
       const fetchedData = await response.json();
@@ -135,12 +136,14 @@ export function PeopleDataTable<TData, TValue>({
   return (
     <div>
       <div className="flex items-center py-4">
-        <Input
-          placeholder="Filter Transaction Type"
-          value={(table.getColumn("transactionType")?.getFilterValue() as string) || ""}
-          onChange={(e) => table.getColumn("transactionType")?.setFilterValue(e.target.value)}
-          className="max-w-sm"
-        />
+      <Input
+  placeholder="Filter User Name"
+  value={(table.getColumn("username")?.getFilterValue() as string) || ""}
+  onChange={(e) => table.getColumn("username")?.setFilterValue(e.target.value)}
+  className="max-w-sm"
+/>
+
+
         
         <DateRangePicker onDateRangeChange={handleDateRangeChange} /> {/* Pass the handler as prop */}
 
