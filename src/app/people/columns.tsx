@@ -41,19 +41,43 @@ export const columns = (fetchPeopleByType: (type: string) => void): ColumnDef<Pe
   },
   {
     header: "User Name",
-    accessorKey: "user.username", // Adjust this based on your data structure
+    accessorKey: "user.username", // Keep this for accessing nested data
+    id: "username",               // Add a unique id for reference
   },
-  {
+ {
     header: "Amount",
-    accessorKey: "amount", // Adjust this based on your data structure
+    accessorKey: "amount",
+    cell: info => {
+      const amount = info.getValue<number>();
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(amount);
+    },
   },
   {
     header: "Transaction Date",
-    accessorKey: "transactionDate", // Adjust based on your data structure
+    accessorKey: "transactionDate",
+    cell: info => {
+      const dateValue = new Date(info.getValue<string>()); // Parse the date value
+      return dateValue.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long", // e.g., "January"
+        day: "numeric",
+      });
+    },
   },
   {
-    header: "Created Date",
-    accessorKey: "createdAt", // Adjust based on your data structure
+    header: "Created At",
+    accessorKey: "createdAt",
+    cell: info => {
+      const dateValue = new Date(info.getValue<string>()); // Parse the date value
+      return dateValue.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long", // e.g., "January"
+        day: "numeric",
+      });
+    },
   },
   {
     header: ({ column }) => {
@@ -79,9 +103,6 @@ export const columns = (fetchPeopleByType: (type: string) => void): ColumnDef<Pe
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => handleTransactionTypeClick("withdrawal")}>
               Withdrawal
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleTransactionTypeClick("transfer")}>
-              Transfer
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
